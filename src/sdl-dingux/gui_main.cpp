@@ -42,6 +42,7 @@
 
 SDL_Event event;
 
+SDL_Surface *gui_ScreenSurface = NULL;
 SDL_Surface *gui_screen = NULL;
 SDL_Surface *bg = NULL;
 SDL_Surface *bgs = NULL;
@@ -94,7 +95,8 @@ void save_lastsel();
 void redraw_screen(void)
 {
 	SDL_Delay(16);
-	SDL_Flip(gui_screen);
+  SDL_SoftStretch(gui_screen, NULL, gui_ScreenSurface, NULL);
+	SDL_Flip(gui_ScreenSurface);
 }
 
 void free_memory(void)
@@ -582,8 +584,8 @@ void gui_menu_key_init()
 	gui_menu_key_values.push_back(SDLK_BACKSPACE);
 	gui_menu_key_labels[SDLK_LCTRL]     = "A";
 	gui_menu_key_labels[SDLK_LALT]      = "B";
-	gui_menu_key_labels[SDLK_SPACE]     = "Y";
-	gui_menu_key_labels[SDLK_LSHIFT]    = "X";
+	gui_menu_key_labels[SDLK_SPACE]     = "X";
+	gui_menu_key_labels[SDLK_LSHIFT]    = "Y";
 	gui_menu_key_labels[SDLK_TAB]       = "L";
 	gui_menu_key_labels[SDLK_BACKSPACE] = "R";
 }
@@ -1184,7 +1186,7 @@ void ss_prg_options(int first, int last)
 						sprintf((char*)g_message, "Favorites list successfully cleared");
 						prep_bg_opt(first);
 					}
-				} else if(event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_SPACE) {
+				} else if(event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_LSHIFT) {
 					int option = first + options_num;
 					if(option >= OPTION_GUI_PATH0 && option <= OPTION_GUI_PATH19) {
 						strcpy(szAppRomPaths[option - OPTION_GUI_PATH0], "");
@@ -1443,7 +1445,8 @@ void ss_prog_run(void)
 						SDL_InitSubSystem(SDL_INIT_VIDEO);
 					}
 
-					gui_screen = SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE);
+					gui_ScreenSurface = SDL_SetVideoMode(320,480, 16, SDL_SWSURFACE);
+          gui_screen = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0, 0, 0, 0);
 					SDL_ShowCursor(0);
 
 					prep_bg();
@@ -1572,12 +1575,12 @@ void gui_menu_main()
 					sel.rom = findfirst(event.key.keysym.sym,sel.rom);
 					sel.ofs = sel.rom;
 					sel.y = START_Y - 1;
-				} else if(event.key.keysym.sym == SDLK_LSHIFT) { // X button
+				} else if(event.key.keysym.sym == SDLK_SPACE) { // X button
 					// no need to increment compteur
 					continue;
 				} else if(event.key.keysym.sym == SDLK_TAB) { // page up
 					Uint8* keystate = SDL_GetKeyState(NULL);
-					if (keystate[SDLK_LSHIFT]) {
+					if (keystate[SDLK_SPACE]) {
 						if (compteur == 0) {
 							// prev genre
 							cfg.genre--;
@@ -1598,7 +1601,7 @@ void gui_menu_main()
 					}
 				} else if(event.key.keysym.sym == SDLK_BACKSPACE) { // page down
 					Uint8* keystate = SDL_GetKeyState(NULL);
-					if (keystate[SDLK_LSHIFT]) {
+					if (keystate[SDLK_SPACE]) {
 						if (compteur == 0) {
 							// next genre
 							cfg.genre = (cfg.genre + 1) % NB_GENRES;
@@ -1619,7 +1622,7 @@ void gui_menu_main()
 					}
 				} else if(event.key.keysym.sym == SDLK_DOWN) {
 					Uint8* keystate = SDL_GetKeyState(NULL);
-					if (keystate[SDLK_LSHIFT]) {
+					if (keystate[SDLK_SPACE]) {
 						if (compteur == 0) {
 							// next filter
 							cfg.list = (cfg.list + 1) % NB_FILTERS;
@@ -1663,7 +1666,7 @@ void gui_menu_main()
 					}
 				} else if(event.key.keysym.sym == SDLK_UP) {
 					Uint8* keystate = SDL_GetKeyState(NULL);
-					if (keystate[SDLK_LSHIFT]) {
+					if (keystate[SDLK_SPACE]) {
 						if (compteur == 0) {
 							// prev filter
 							cfg.list--;
@@ -1701,7 +1704,7 @@ void gui_menu_main()
 					}
 				} else if(event.key.keysym.sym == SDLK_LEFT) {
 					Uint8* keystate = SDL_GetKeyState(NULL);
-					if (keystate[SDLK_LSHIFT]) {
+					if (keystate[SDLK_SPACE]) {
 						if (compteur == 0) {
 							// prev hardware
 							cfg.hardware--;
@@ -1716,7 +1719,7 @@ void gui_menu_main()
 					}
 				} else if(event.key.keysym.sym == SDLK_RIGHT) {
 					Uint8* keystate = SDL_GetKeyState(NULL);
-					if (keystate[SDLK_LSHIFT]) {
+					if (keystate[SDLK_SPACE]) {
 						if (compteur == 0) {
 							// next hardware
 							cfg.hardware = (cfg.hardware + 1) % NB_HARDWARES;
@@ -1747,7 +1750,7 @@ void gui_menu_main()
 						compteur = 0;
 						continue;
 					}
-				} else if(event.key.keysym.sym == SDLK_SPACE ){
+				} else if(event.key.keysym.sym == SDLK_LSHIFT){
 					if(compteur == 0) ss_prg_help();
 				} else if(event.key.keysym.sym == SDLK_RETURN ){
 					ss_prg_options(OPTION_MAIN_FIRST, OPTION_MAIN_LAST);
@@ -1770,7 +1773,8 @@ void GuiRun()
 	// fill data with data
 	gui_sort_romlist();
 
-	gui_screen = SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE);
+	gui_ScreenSurface = SDL_SetVideoMode(320, 480, 16, SDL_SWSURFACE);
+  gui_screen = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0, 0, 0, 0);
 
 	SDL_ShowCursor(0);
 	SDL_JoystickOpen(0);

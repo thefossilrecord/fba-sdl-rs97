@@ -24,7 +24,7 @@ PERL = 1
 BUILD_A68K = 1
 BUILD_C68K = 1
 BUILD_M68K = 1
-USE_LIBAO = 1
+#USE_LIBAO = 1
 
 #
 #	Specify paths/files
@@ -306,6 +306,9 @@ alldep	= $(foreach file,$(autobj:.o=.c), \
 		$(foreach dir,$(alldir),$(subst $(srcdir),$(objdir), \
 		$(firstword $(subst .cpp,.d,$(wildcard $(srcdir)$(dir)/$(file)))))))
 
+TOOLCHAIN = /opt/rs97-toolchain
+SDL_CONFIG = $(TOOLCHAIN)/mipsel-buildroot-linux-musl/sysroot/usr/bin/sdl-config
+
 #
 #
 #	Specify compiler/linker/assembler
@@ -314,10 +317,11 @@ alldep	= $(foreach file,$(autobj:.o=.c), \
 
 HOSTCC = gcc
 HOSTCXX = g++
-CC	= mipsel-linux-gcc
-CXX	= mipsel-linux-g++
+CC	= $(TOOLCHAIN)/bin/mipsel-linux-gcc
+CC	= $(TOOLCHAIN)/bin/mipsel-linux-gcc
+CXX	= $(TOOLCHAIN)/bin/mipsel-linux-g++
 LD	= $(CXX)
-AS	= mipsel-linux-as
+AS	= $(TOOLCHAIN)/bin/mipsel-linux-as
 
 HOSTCFLAGS = $(incdir)
 CFLAGS   = -O2 -G0 -march=mips32 -pipe -fno-builtin -fno-common -mno-shared -ffast-math \

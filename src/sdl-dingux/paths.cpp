@@ -20,24 +20,24 @@ void BurnPathsInit()
 #ifndef WIN32
 	char *home = getenv("HOME");
 	if(home) sprintf(szAppHomePath, "%s/.fba", home);
-	mkdir(szAppHomePath, 0777);
+	mkdir(szAppHomePath, S_IRWXU);
 	if(!errno) {
 		getcwd(szAppHomePath, MAX_PATH);
 		strcat(szAppHomePath, "/.fba");
-		mkdir(szAppHomePath, 0777);
+		mkdir(szAppHomePath, S_IRWXU);
 	}
 
 	sprintf(szAppSavePath, "%s/saves", szAppHomePath);
-	mkdir(szAppSavePath, 0777);
+	mkdir(szAppSavePath, S_IRWXU);
 
 	sprintf(szAppConfigPath, "%s/configs", szAppHomePath);
-	mkdir(szAppConfigPath, 0777);
+	mkdir(szAppConfigPath, S_IRWXU);
 
 	sprintf(szAppPreviewPath, "%s/previews", szAppHomePath);
-	mkdir(szAppPreviewPath, 0777);
+	mkdir(szAppPreviewPath, S_IRWXU);
 
 	sprintf(szAppSamplesPath, "%s/samples", szAppHomePath);
-	mkdir(szAppSamplesPath, 0777);
+	mkdir(szAppSamplesPath, S_IRWXU);
 #else
 	getcwd(szAppHomePath, MAX_PATH);
 	strcat(szAppHomePath, "/.fba");

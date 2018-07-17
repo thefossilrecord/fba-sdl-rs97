@@ -211,7 +211,7 @@ int		DisOp;
 #define FALSE 0
 
 // undef to use mips32r2 opcodes
-//#define USE_MIPS32R1
+#define USE_MIPS32R1
 
 #define ZERO		 0
 #define AT			 1

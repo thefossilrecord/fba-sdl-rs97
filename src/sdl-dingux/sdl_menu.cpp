@@ -152,7 +152,7 @@ void gui_Flip()
 	SDL_Rect dstrect;
 
 	dstrect.x = (screen->w - 320) / 2;
-	dstrect.y = (screen->h - 240) / 2;
+	dstrect.y = (screen->h - 480) / 2;
 
 	SDL_BlitSurface(menuSurface, 0, screen, &dstrect);
 	SDL_Flip(screen);
@@ -163,17 +163,23 @@ void gui_Flip()
 */
 void DrawChar(SDL_Surface *s, int x, int y, unsigned char a, int fg_color, int bg_color)
 {
-	Uint16 *dst;
+	Uint16 *dst, *dst2;
 	int w, h;
+	y = y * 2;
 
+	dst = (Uint16 *)s->pixels + y*s->w + x;
 	if(SDL_MUSTLOCK(s)) SDL_LockSurface(s);
 	for(h = 8; h; h--) {
-		dst = (Uint16 *)s->pixels + (y+8-h)*s->w + x;
+		dst2 = dst + 320;
 		for(w = 8; w; w--) {
 			Uint16 color = bg_color; // background
 			if((gui_font[a*8 + (8-h)] >> w) & 1) color = fg_color; // test bits 876543210
-			*dst++ = color;
+				{
+				*dst++ = color;
+				*dst2++ = color;
+				}
 		}
+    dst= dst2+312; // fix for rs-97
 	}
 	if(SDL_MUSTLOCK(s)) SDL_UnlockSurface(s);
 }
@@ -359,7 +365,7 @@ static void gui_reset()
 
 void gui_Init()
 {
-	menuSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0, 0, 0, 0);
+	menuSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 480, 16, 0, 0, 0, 0);
 }
 
 void gui_Run()
